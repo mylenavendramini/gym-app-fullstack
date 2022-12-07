@@ -1,97 +1,58 @@
-import passport from "passport";
-import passportLocal from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 
-import { User, UserDocument } from "../models/User";
+import User from "../models/User";
 
-const LocalStrategy = passportLocal.Strategy;
+interface IUser {
+  id: string;
+  email: string;
+  password: string;
+  comparePassword: (
+    password: string,
+    cb: (err: any, isMatch: any) => void
+  ) => void;
+}
 
-// passport.use(
-//   new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-//     User.findOne(
-//       { email: email.toLowerCase() },
-//       (err: NativeError, user: UserDocument) => {
-//         if (err) {
-//           return done(err);
-//         }
-//         if (!user) {
-//           return done(undefined, false, {
-//             message: `Email ${email} not found.`,
-//           });
-//         }
-//         user.comparePassword(password, (err: Error, isMatch: boolean) => {
-//           if (err) {
-//             return done(err);
-//           }
-//           if (isMatch) {
-//             return done(undefined, user);
-//           }
-//           return done(undefined, false, {
-//             message: "Invalid email or password.",
-//           });
-//         });
-//       }
-//     );
-//   })
-// );
-
-// passport.serializeUser<any, any>((req, user, done) => {
-//   done(undefined, user);
-// });
-
-// passport.deserializeUser((id, done) => {
-//   User.findById(id, (err: NativeError, user: UserDocument) => done(err, user));
-// });
-
-module.exports = function () {
+export const passport = (passport: any) => {
   passport.use(
-    new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-      User.findOne(
-        { email: email.toLowerCase() },
-        (err: NativeError, user: UserDocument) => {
-          if (err) {
-            return done(err);
-          }
-          if (!user) {
-            return done(undefined, false, {
-              message: `Email ${email} not found.`,
-            });
-          }
-          user.comparePassword(password, (err: Error, isMatch: boolean) => {
+    new LocalStrategy(
+      { usernameField: "email" },
+      (email: string, password: string, done: any) => {
+        User.findOne(
+          { email: email.toLowerCase() },
+          (err: any, user: IUser) => {
             if (err) {
               return done(err);
             }
-            if (isMatch) {
-              return done(undefined, user);
+            if (!user) {
+              return done(null, false, { msg: `Email ${email} not found.` });
             }
-            return done(undefined, false, {
-              message: "Invalid email or password.",
+            if (!user.password) {
+              return done(null, false, {
+                msg: "Your account was registered using a sign-in provider. To enable password login, sign in using a provider, and then set a password under your user profile.",
+              });
+            }
+            user.comparePassword(password, (err: any, isMatch: any) => {
+              if (err) {
+                return done(err);
+              }
+              if (isMatch) {
+                return done(null, user);
+              }
+              return done(null, false, { msg: "Invalid email or password." });
             });
-          });
-        }
-      );
-    })
+          }
+        );
+      }
+    )
   );
 
-  passport.serializeUser<any, any>((req, user, done) => {
-    done(undefined, user);
+  passport.serializeUser((user: IUser, done: any) => {
+    done(null, user.id);
   });
 
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err: NativeError, user: UserDocument) =>
-      done(err, user)
-    );
+  passport.deserializeUser((id: string, done: any) => {
+    User.findById(id, (err: any, user: IUser) => done(err, user));
   });
 };
 
-// Login Required middleware.
-
-// export const isAuthenticated = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   if (req.isAuthenticated()) {
-//     return next();
-//   }
-//   res.redirect("/login");
-// };
+module.exports = passport;
