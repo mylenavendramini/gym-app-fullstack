@@ -1,6 +1,20 @@
 import { Response, Request } from "express";
 import { IWorkout } from "../../types/workout";
-import Workout from "../../models/workout";
+import Workout from "../../models/Workout";
+
+interface IUser {
+  id: string | number;
+  // other properties of the user object
+}
+
+// const getWorkouts = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const workouts: IWorkout[] = await Workout.find();
+//     res.status(200).json({ workouts });
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 const getWorkouts = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -22,6 +36,7 @@ const createWorkout = async (req: Request, res: Response): Promise<void> => {
       | "weight"
       | "interval"
       | "status"
+      | "user"
     >;
     const workout: IWorkout = new Workout({
       exercise: body.exercise,
@@ -31,6 +46,7 @@ const createWorkout = async (req: Request, res: Response): Promise<void> => {
       weight: body.weight,
       interval: body.interval,
       status: body.status,
+      user: (req.user as IUser).id,
     });
     const newWorkout: IWorkout = await workout.save();
     const allWorkouts: IWorkout[] = await Workout.find();
