@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface IWorkout extends Document {
   exercise: string;
@@ -8,4 +8,5 @@ export interface IWorkout extends Document {
   weight: number;
   interval: number;
   status: boolean;
+  user: mongoose.Types.ObjectId;
 }
