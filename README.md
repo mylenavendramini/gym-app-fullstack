@@ -41,7 +41,7 @@ Create a nodemon.json file and add {
 
 ## Built With
 
-TYPESCRIPT | NODE.JS | EXPRESS | MONGODB
+REACT | TYPESCRIPT | NODE.JS | EXPRESS | MONGODB
 
 ## Author
 
