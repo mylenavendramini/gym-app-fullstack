@@ -2,6 +2,10 @@
 
 My first fullstack project, where the user can customize the gym training (eg repetitions, sets, weights), creating, updating and deleting each exercise.
 
+
+https://user-images.githubusercontent.com/93344031/213565144-ec7b4012-d385-47a6-a0c2-0e4fc29f498d.mp4
+
+
 ## Prerequisites
 
 This project requires NPM. Check if you have it:
