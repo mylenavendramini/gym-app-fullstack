@@ -27,7 +27,8 @@ $ npm install
 
 ## Packages used
 
-express, mongodb, mongoose, nodemon
+Server: express, mongodb, mongoose, nodemon
+Client: react-router-dom, axios
 
 ## You have to add
 

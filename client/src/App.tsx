@@ -8,8 +8,14 @@ import {
 import "./App.css";
 import AddWorkout from "./components/AddWorkout";
 import WorkoutItem from "./components/WorkoutItem";
+import { Routes, Route, Link } from "react-router-dom";
+
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Home from "./components/Home";
 
 const App: React.FC = () => {
+  // Workouts:
   const [workouts, setWorkouts] = useState<IWorkout[]>([]);
 
   useEffect(() => {
@@ -53,19 +59,90 @@ const App: React.FC = () => {
       })
       .catch((error: Error) => console.log(error));
   };
+
+  // Auth:
+
+  const [showAdminBoard, setShowAdminBoard] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<any>(undefined);
+
+  const logOut = () => {
+    setShowAdminBoard(false);
+    setCurrentUser(undefined);
+  };
+
   return (
-    <main className="App">
-      <h1>Gym APP</h1>
-      <AddWorkout saveWorkout={handleSaveWorkout} />
-      {workouts.map((workout: IWorkout) => (
-        <WorkoutItem
-          key={workout._id}
-          updateWorkout={handleUpdateWorkout}
-          deleteWorkout={handleDeleteWorkout}
-          workout={workout}
-        />
-      ))}
-    </main>
+    <div>
+      <nav className="navbar">
+        <div className="navbar-nav">
+          <li className="nav-item">
+            <Link to={"/home"} className="nav-link">
+              Home
+            </Link>
+          </li>
+
+          {showAdminBoard && (
+            <li className="nav-item">
+              <Link to={"/admin"} className="nav-link">
+                Admin Board
+              </Link>
+            </li>
+          )}
+          {currentUser && (
+            <li className="nav-item">
+              <Link to={"/user"} className="nav-link">
+                User
+              </Link>
+            </li>
+          )}
+        </div>
+        {currentUser ? (
+          <div className="navbar-nav ml-auto">
+            <li className="nav-item">
+              <Link to={"/profile"} className="nav-link">
+                {currentUser.username}
+              </Link>
+            </li>
+            <li className="nav-item">
+              <a href="/login" className="nav-link" onClick={logOut}>
+                LogOut
+              </a>
+            </li>
+          </div>
+        ) : (
+          <div className="navbar-nav">
+            <li className="nav-item">
+              <Link to={"/login"} className="nav-link">
+                Login
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link to={"/register"} className="nav-link">
+                Sign Up
+              </Link>
+            </li>
+          </div>
+        )}
+      </nav>
+
+      <main className="App">
+        <h1>Gym APP</h1>
+        <AddWorkout saveWorkout={handleSaveWorkout} />
+        {workouts.map((workout: IWorkout) => (
+          <WorkoutItem
+            key={workout._id}
+            updateWorkout={handleUpdateWorkout}
+            deleteWorkout={handleDeleteWorkout}
+            workout={workout}
+          />
+        ))}
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </main>
+    </div>
   );
 };
 
